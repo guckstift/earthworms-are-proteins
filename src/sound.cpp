@@ -10,3 +10,7 @@ Sound::~Sound ()
 {
 }
 
+void Sound::play ()
+{
+	Mix_PlayChannel (-1, chunk, 0);
+}

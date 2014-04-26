@@ -4,10 +4,10 @@
 
 using namespace std;
 
-Display::Display (char *wndName)
+Display::Display (char *wndName, int w, int h)
 {
-	w = 800;
-	h = 600;
+	this->w = w;
+	this->h = h;
 	
 	window = SDL_CreateWindow (wndName, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, w, h,
 		SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE );

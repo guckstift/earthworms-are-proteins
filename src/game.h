@@ -15,7 +15,7 @@ public:
 	bool running;
 	Display *display;
 	
-	Game ();
+	Game (char *gameName = "My Game", int dispW = 800, int dispH = 600);
 	~Game ();
 	virtual void run () = 0;
 };

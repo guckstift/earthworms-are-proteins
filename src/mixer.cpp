@@ -1,5 +1,4 @@
 
-#include <SDL_mixer.h>
 #include "mixer.h"
 
 Mixer::Mixer ()

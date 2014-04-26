@@ -1,17 +1,25 @@
 
 #include <SDL2/SDL.h>
-#include "sauerkirsche.h"
+#include "earthworms.h"
 #include "display.h"
+#include "image.h"
+#include "worm.h"
 
-Sauerkirsche::Sauerkirsche ()
+Earthworms::Earthworms ()
+	: Game ("Earthworms are Proteins", 1024, 768)
+{
+	imgBackground = new Image (display, "res/background.png");
+	imgGrid = new Image (display, "res/grid.png");
+	imgWorm = new Image (display, "res/worm.png", 4, 4);
+	
+	worm = new Worm (imgWorm);
+}
+
+Earthworms::~Earthworms ()
 {
 }
 
-Sauerkirsche::~Sauerkirsche ()
-{
-}
-
-void Sauerkirsche::run ()
+void Earthworms::run ()
 {
 	running = true;
 	
@@ -43,6 +51,17 @@ void Sauerkirsche::run ()
 			
 			display->clear ();
 			
+			imgBackground->draw ();
+			
+			int ox = 15, oy = 200;
+			for (int x=0; x<GRID_COLS; x++) {
+				for (int y=0; y<GRID_ROWS; y++) {
+					imgGrid->draw (GRID_OFFX + x*32, GRID_OFFY + y*32, 1, 1, 0, 0, 0.25);
+				}
+			}
+			
+			worm->draw ();
+			
 			display->present ();
 		}
 	}
@@ -50,7 +69,7 @@ void Sauerkirsche::run ()
 
 int main (int argc, char *argv[])
 {
-	Sauerkirsche *game = new Sauerkirsche ();
+	Earthworms *game = new Earthworms ();
 	
 	game->run ();
 	

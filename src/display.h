@@ -11,7 +11,7 @@ public:
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 
-	Display (char *wndName = "Hello World!");
+	Display (char *wndName = "Hello World!", int w = 800, int h = 600);
 	~Display ();
 	void clear ();
 	void present ();

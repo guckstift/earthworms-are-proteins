@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Game::Game ()
+Game::Game (char *gameName, int dispW, int dispH)
 {
 	running = false;
 	
@@ -30,7 +30,7 @@ Game::Game ()
 		exit (-1);
 	}
 	
-	display = new Display ();
+	display = new Display (gameName, dispW, dispH);
 }
 
 Game::~Game ()
