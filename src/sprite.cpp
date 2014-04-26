@@ -1,4 +1,5 @@
 
+#include <cmath>
 #include "sprite.h"
 #include "image.h"
 #include "camera.h"
