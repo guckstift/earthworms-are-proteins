@@ -2,6 +2,7 @@
 #include <SDL2/SDL_image.h>
 #include "image.h"
 #include "display.h"
+#include "utils.h"
 
 Image::Image (Display *display, char *filename, int cols, int rows)
 {

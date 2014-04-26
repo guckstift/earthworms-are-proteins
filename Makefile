@@ -3,23 +3,25 @@ all : build/earthworms
 rebuild : clean all
 clean :
 	-rm build/*
-build/earthworms : build/display.o build/sprite.o build/font.o build/image.o build/game.o build/mixer.o build/sound.o build/worm.o build/mob.o build/camera.o build/utils.o build/earthworms.o
-	g++ -o build/earthworms build/display.o build/sprite.o build/font.o build/image.o build/game.o build/mixer.o build/sound.o build/worm.o build/mob.o build/camera.o build/utils.o build/earthworms.o -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+build/earthworms : build/display.o build/sprite.o build/font.o build/image.o build/game.o build/cherry.o build/mixer.o build/sound.o build/worm.o build/mob.o build/camera.o build/utils.o build/earthworms.o
+	g++ -o build/earthworms build/display.o build/sprite.o build/font.o build/image.o build/game.o build/cherry.o build/mixer.o build/sound.o build/worm.o build/mob.o build/camera.o build/utils.o build/earthworms.o -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 build/display.o : src/display.cpp src/display.h
 	g++ -o build/display.o -c src/display.cpp -Wno-write-strings
 build/sprite.o : src/sprite.cpp src/sprite.h src/drawable.h src/image.h src/camera.h
 	g++ -o build/sprite.o -c src/sprite.cpp -Wno-write-strings
 build/font.o : src/font.cpp src/font.h src/image.h src/display.h
 	g++ -o build/font.o -c src/font.cpp -Wno-write-strings
-build/image.o : src/image.cpp src/image.h src/display.h
+build/image.o : src/image.cpp src/image.h src/display.h src/utils.h
 	g++ -o build/image.o -c src/image.cpp -Wno-write-strings
 build/game.o : src/game.cpp src/game.h src/display.h
 	g++ -o build/game.o -c src/game.cpp -Wno-write-strings
+build/cherry.o : src/cherry.cpp src/cherry.h src/mob.h src/sprite.h src/drawable.h
+	g++ -o build/cherry.o -c src/cherry.cpp -Wno-write-strings
 build/mixer.o : src/mixer.cpp src/mixer.h
 	g++ -o build/mixer.o -c src/mixer.cpp -Wno-write-strings
 build/sound.o : src/sound.cpp src/sound.h
 	g++ -o build/sound.o -c src/sound.cpp -Wno-write-strings
-build/worm.o : src/worm.cpp src/worm.h src/image.h
+build/worm.o : src/worm.cpp src/earthworms.h src/game.h src/worm.h src/image.h
 	g++ -o build/worm.o -c src/worm.cpp -Wno-write-strings
 build/mob.o : src/mob.cpp src/mob.h src/sprite.h src/drawable.h
 	g++ -o build/mob.o -c src/mob.cpp -Wno-write-strings
