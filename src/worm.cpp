@@ -1,8 +1,11 @@
 
 #include <iostream>
+#include <cmath>
 #include "earthworms.h"
 #include "worm.h"
 #include "image.h"
+#include "cherry.h"
+#include "leaf.h"
 
 using namespace std;
 
@@ -30,10 +33,11 @@ Worm::Worm (Image *img, Earthworms *parent)
 	this->img = img;
 	this->parent = parent;
 	len = 2;
-	speed = 3;
+	speed = 4;
 	duration = 0;
 	nextDir = dir = 8;
 	dead = false;
+	haveEaten = false;
 	
 	segments.clear ();
 	int x = GRID_COLS / 2;
@@ -124,33 +128,40 @@ void Worm::advance ()
 	segments.push_front (new Segment (newX, newY, newHeadFrame, newHeadPattern, nextDir));
 	parent->setObst (newX, newY, true);
 	
-	// get current tail seg
-	list<Segment*>::iterator tail = getSegment (-1);
-	
-	parent->setObst ((*tail)->x, (*tail)->y, false);
-	
-	list<Segment*>::iterator newTail = getSegment (-2);
-	
-	cout << (*newTail)->d << endl;
-	(*newTail)->p = (*newTail)->d;
-	
-	switch ((*newTail)->p) {
-	case 1: (*newTail)->f = 14; break;
-	case 2: (*newTail)->f = 12; break;
-	case 4: (*newTail)->f = 15; break;
-	case 8: (*newTail)->f = 13; break;
+	if (haveEaten) {
+		haveEaten = false;
 	}
-	
-	segments.pop_back ();
-	
-	/*
-	for (int y = 0; y < GRID_ROWS; y++) {
-		for (int x = 0; x < GRID_COLS; x++) {
-			cout << (parent->getObst (x,y) ? "1" : "0");
+	else {
+		// get current tail seg
+		list<Segment*>::iterator tail = getSegment (-1);
+		
+		parent->setObst ((*tail)->x, (*tail)->y, false);
+		
+		list<Segment*>::iterator newTail = getSegment (-2);
+		
+		(*newTail)->p = (*newTail)->d;
+		
+		switch ((*newTail)->p) {
+		case 1: (*newTail)->f = 14; break;
+		case 2: (*newTail)->f = 12; break;
+		case 4: (*newTail)->f = 15; break;
+		case 8: (*newTail)->f = 13; break;
 		}
-		cout << endl;
+		
+		segments.pop_back ();
 	}
-	*/
+	
+	// did worm eat something
+	if (parent->cherry && newY==0 && floor ((parent->cherry->x-GRID_OFFX)/32)==newX) {
+		eat ();
+		delete parent->cherry;
+		parent->cherry = 0;
+	}
+	if (parent->leaf && newY==0 && floor ((parent->leaf->x-GRID_OFFX)/32)==newX) {
+		eat ();
+		delete parent->leaf;
+		parent->leaf = 0;
+	}
 }
 
 void Worm::turn (int dir)
@@ -178,5 +189,11 @@ list<Worm::Segment*>::iterator Worm::getSegment (int n)
 		std::advance (elm, segments.size()+n);
 		return elm;
 	}
+}
+
+void Worm::eat ()
+{
+	haveEaten = true;
+	speed += 0.25;
 }
 

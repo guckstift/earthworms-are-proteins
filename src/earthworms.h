@@ -12,6 +12,7 @@
 class Image;
 class Worm;
 class Cherry;
+class Leaf;
 
 class Earthworms : public Game
 {
@@ -20,9 +21,11 @@ public:
 	Image *imgGrid;
 	Image *imgWorm;
 	Image *imgCherry;
+	Image *imgLeaf;
 	
 	Worm *worm;
 	Cherry *cherry;
+	Leaf *leaf;
 	
 	bool obstacles [GRID_ROWS * GRID_COLS];
 	

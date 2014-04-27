@@ -7,6 +7,7 @@
 #include "image.h"
 #include "worm.h"
 #include "cherry.h"
+#include "leaf.h"
 
 Earthworms::Earthworms ()
 	: Game ("Earthworms are Proteins", 1024, 768)
@@ -18,6 +19,7 @@ Earthworms::Earthworms ()
 	}
 	
 	cherry = 0;
+	leaf = 0;
 	
 	srand (time (0));
 	
@@ -25,6 +27,7 @@ Earthworms::Earthworms ()
 	imgGrid = new Image (display, "res/grid.png");
 	imgWorm = new Image (display, "res/worm.png", 4, 4);
 	imgCherry = new Image (display, "res/cherry.png");
+	imgLeaf = new Image (display, "res/leaf2.png");
 	
 	worm = new Worm (imgWorm, this);
 }
@@ -79,8 +82,33 @@ void Earthworms::run ()
 			// ACTION
 			//
 			
-			if (cherry==0) {
-				cherry = new Cherry (
+			if (cherry==0 && leaf==0) {
+				if (rand()%2==0) {
+					cherry = new Cherry (imgCherry);
+					cherry->x = GRID_OFFX + 16 + (rand() % (GRID_COLS*32 - 32));
+					cherry->y = 0;
+					cherry->vy = 5;
+				}
+				else {
+					leaf = new Leaf (imgLeaf);
+					leaf->x = GRID_OFFX + 16 + (rand() % (GRID_COLS*32 - 32));
+					leaf->y = 0;
+					leaf->vy = 5;
+				}
+			}
+			else {
+				if (cherry) {
+					cherry->advance ();
+					if (cherry->y >= GRID_OFFY) {
+						cherry->vy = 0;
+					}
+				}
+				else if (leaf) {
+					leaf->advance ();
+					if (leaf->y >= GRID_OFFY) {
+						leaf->vy = 0;
+					}
+				}
 			}
 			
 			worm->action ();
@@ -99,6 +127,11 @@ void Earthworms::run ()
 					imgGrid->draw (GRID_OFFX + x*32, GRID_OFFY + y*32, 1, 1, 0, 0, 0.25);
 				}
 			}
+			
+			if (cherry)
+				cherry->draw ();
+			else if (leaf)
+				leaf->draw ();
 			
 			worm->draw ();
 			
