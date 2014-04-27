@@ -14,12 +14,13 @@ Sprite::Sprite (Image *img, Camera *cam)
 	angle = 0.0;
 	alpha = 1.0;
 	frame = 0;
+	hflip = false;
 	this->cam = cam;
 }
 
 void Sprite::draw ()
 {
-	img->draw (getScreenX (), getScreenY (), sx, sy, frame, angle, alpha);
+	img->draw (getScreenX (), getScreenY (), sx, sy, frame, angle, alpha, hflip);
 }
 
 int Sprite::getScreenX ()

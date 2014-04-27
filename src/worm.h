@@ -24,7 +24,7 @@ public:
 		
 		Segment (int x, int y, int f, int p, int d);
 	};
-	Image *img;
+	Image *imgs[2];
 	Earthworms *parent;
 	int len;
 	list<Segment*> segments;
@@ -34,8 +34,9 @@ public:
 	int nextDir;
 	bool dead;
 	bool haveEaten;
+	bool turbo;
 	
-	Worm (Image *img, Earthworms *parent);
+	Worm (Image *imgs[2], Earthworms *parent);
 	~Worm ();
 	void draw ();
 	void action ();
@@ -43,6 +44,7 @@ public:
 	void turn (int dir);
 	list<Segment*>::iterator getSegment (int n);
 	void eat ();
+	void die ();
 };
 
 #endif

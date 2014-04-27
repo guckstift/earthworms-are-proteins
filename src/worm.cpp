@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include "earthworms.h"
+#include "sound.h"
 #include "worm.h"
 #include "image.h"
 #include "cherry.h"
@@ -28,9 +29,10 @@ Worm::Segment::Segment (int x, int y, int f, int p, int d)
 	this->d = d;
 }
 
-Worm::Worm (Image *img, Earthworms *parent)
+Worm::Worm (Image *imgs[2], Earthworms *parent)
 {
-	this->img = img;
+	for (int i=0; i<3; i++)
+		this->imgs[i] = imgs[i];
 	this->parent = parent;
 	len = 2;
 	speed = 4;
@@ -38,6 +40,7 @@ Worm::Worm (Image *img, Earthworms *parent)
 	nextDir = dir = 8;
 	dead = false;
 	haveEaten = false;
+	turbo = false;
 	
 	segments.clear ();
 	int x = GRID_COLS / 2;
@@ -57,7 +60,7 @@ Worm::~Worm ()
 void Worm::draw ()
 {
 	for (list<Segment*>::iterator it = segments.begin (); it != segments.end (); ++it) {
-		img->draw (
+		imgs[dead ? 1 : 0]->draw (
 			GRID_OFFX + (*it)->x * 32,
 			GRID_OFFY + (*it)->y * 32,
 			1, 1, (*it)->f, 0, 1.0
@@ -69,12 +72,16 @@ void Worm::action ()
 {
 	if (dead)
 		return;
-	if (duration >= FPS / speed) {
+	if (duration >= FPS / (speed+(turbo?speed:0))) {
 		advance ();
 		duration = 0;
 	}
 	duration ++;
 }
+
+/*
+	really advance by one field
+*/
 
 void Worm::advance ()
 {
@@ -99,8 +106,7 @@ void Worm::advance ()
 	
 	// crash?
 	if (parent->getObst (newX, newY)) {
-		dead = true;
-		cout << "died" << endl;
+		die ();
 		return;
 	}
 	
@@ -195,5 +201,13 @@ void Worm::eat ()
 {
 	haveEaten = true;
 	speed += 0.25;
+	parent->sndNyamNyam->play ();
+}
+
+void Worm::die ()
+{
+	dead = true;
+	cout << "died" << endl;
+	parent->sndOuch [rand()%3]->play ();
 }
 

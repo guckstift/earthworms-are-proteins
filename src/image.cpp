@@ -40,7 +40,7 @@ Image::~Image ()
 }
 
 void Image::draw (int x, int y, double sx, double sy, int frame, double angle,
-	double alpha)
+	double alpha, bool hflip)
 {
 	int framex = frame % cols;
 	int framey = frame / cols;
@@ -48,5 +48,5 @@ void Image::draw (int x, int y, double sx, double sy, int frame, double angle,
 	SDL_Rect dstrect = {x, y, fw * sx, fh * sy};
 	SDL_SetTextureAlphaMod (tex, alpha * 255);
 	SDL_RenderCopyEx (display->renderer, tex, &srcrect, &dstrect, angle, 0,
-		SDL_FLIP_NONE);
+		hflip ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE);
 }

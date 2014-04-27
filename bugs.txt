@@ -1,0 +1,3 @@
+Bugs
+====
+* Vogel verlässt spielfeld bei enterAttack

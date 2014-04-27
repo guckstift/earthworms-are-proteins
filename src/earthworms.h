@@ -13,19 +13,30 @@ class Image;
 class Worm;
 class Cherry;
 class Leaf;
+class Bird;
+class Mixer;
+class Sound;
 
 class Earthworms : public Game
 {
 public:
+	Mixer *mixer;
+	
 	Image *imgBackground;
 	Image *imgGrid;
-	Image *imgWorm;
+	Image *imgWorm[2];
 	Image *imgCherry;
 	Image *imgLeaf;
+	Image *imgBird [3];
+	
+	Sound *sndOmnomnom;
+	Sound *sndNyamNyam;
+	Sound *sndOuch[3];
 	
 	Worm *worm;
 	Cherry *cherry;
 	Leaf *leaf;
+	Bird *bird;
 	
 	bool obstacles [GRID_ROWS * GRID_COLS];
 	

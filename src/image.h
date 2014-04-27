@@ -19,7 +19,7 @@ public:
 	Image (Display *display, int width, int height);
 	~Image ();
 	void draw (int x = 0, int y = 0, double sx = 1.0, double sy = 1.0, int frame = 0,
-		double angle = 0.0, double alpha = 1.0);
+		double angle = 0.0, double alpha = 1.0, bool hflip = false);
 };
 
 #endif

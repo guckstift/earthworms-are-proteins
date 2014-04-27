@@ -16,6 +16,7 @@ public:
 	double angle; // 0.0 means looking along negative y-axis, walking clockwise
 	double alpha;
 	int frame;
+	bool hflip;
 	Image *img;
 	Camera *cam;
 

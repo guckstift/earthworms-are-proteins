@@ -2,16 +2,21 @@
 #include <cstdlib>
 #include <ctime>
 #include <SDL2/SDL.h>
+#include "mixer.h"
+#include "sound.h"
 #include "earthworms.h"
 #include "display.h"
 #include "image.h"
 #include "worm.h"
 #include "cherry.h"
 #include "leaf.h"
+#include "bird.h"
 
 Earthworms::Earthworms ()
 	: Game ("Earthworms are Proteins", 1024, 768)
 {
+	mixer = new Mixer ();
+	
 	for (int x = 0; x < GRID_COLS; x++) {
 		for (int y = 0; y < GRID_ROWS; y++) {
 			setObst (x,y,false);
@@ -25,11 +30,22 @@ Earthworms::Earthworms ()
 	
 	imgBackground = new Image (display, "res/background.png");
 	imgGrid = new Image (display, "res/grid.png");
-	imgWorm = new Image (display, "res/worm.png", 4, 4);
+	imgWorm[0] = new Image (display, "res/worm.png", 4, 4);
+	imgWorm[1] = new Image (display, "res/worm2.png", 4, 4);
 	imgCherry = new Image (display, "res/cherry.png");
 	imgLeaf = new Image (display, "res/leaf2.png");
+	imgBird [0] = new Image (display, "res/bird.png");
+	imgBird [1] = new Image (display, "res/bird2.png");
+	imgBird [2] = new Image (display, "res/bird3.png");
+	
+	sndOmnomnom = new Sound ("res/omnomnom.ogg");
+	sndNyamNyam = new Sound ("res/nyamnyam.ogg");
+	sndOuch[0] = new Sound ("res/ouch1.ogg");
+	sndOuch[1] = new Sound ("res/ouch2.ogg");
+	sndOuch[2] = new Sound ("res/ouch3.ogg");
 	
 	worm = new Worm (imgWorm, this);
+	bird = new Bird (imgBird, this);
 }
 
 Earthworms::~Earthworms ()
@@ -68,6 +84,16 @@ void Earthworms::run ()
 					break;
 				case SDLK_DOWN:
 					worm->turn (4);
+					break;
+				case SDLK_SPACE:
+					worm->turbo = true;
+					break;
+				}
+				break;
+			case SDL_KEYUP:
+				switch (event.key.keysym.sym) {
+				case SDLK_SPACE:
+					worm->turbo = false;
 					break;
 				}
 				break;
@@ -112,6 +138,9 @@ void Earthworms::run ()
 			}
 			
 			worm->action ();
+			bird->action ();
+			
+			bird->advance ();
 						
 			//
 			// DRAWING
@@ -134,6 +163,8 @@ void Earthworms::run ()
 				leaf->draw ();
 			
 			worm->draw ();
+			
+			bird->draw ();
 			
 			display->present ();
 		}
