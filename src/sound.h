@@ -12,6 +12,7 @@ public:
 	Sound (char *filename);
 	~Sound ();
 	void play ();
+	void loop ();
 };
 
 #endif

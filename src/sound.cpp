@@ -14,3 +14,8 @@ void Sound::play ()
 {
 	Mix_PlayChannel (-1, chunk, 0);
 }
+
+void Sound::loop ()
+{
+	Mix_PlayChannel (-1, chunk, -1);
+}

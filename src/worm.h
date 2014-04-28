@@ -28,6 +28,7 @@ public:
 	Earthworms *parent;
 	int len;
 	list<Segment*> segments;
+	list<Segment*> cutSegs;
 	float speed; // moves per second
 	int duration;
 	int dir; //  1 = up; 2 = right; 4 = down ; 8 = left
@@ -35,6 +36,8 @@ public:
 	bool dead;
 	bool haveEaten;
 	bool turbo;
+	
+	list<int> commands;
 	
 	Worm (Image *imgs[2], Earthworms *parent);
 	~Worm ();
@@ -45,6 +48,9 @@ public:
 	list<Segment*>::iterator getSegment (int n);
 	void eat ();
 	void die ();
+	void sendCommand (int dir);
+	
+	void cutAt (int x);
 };
 
 #endif

@@ -1,3 +1,4 @@
 Bugs
 ====
-* Vogel verlässt spielfeld bei enterAttack
+* Vogel verlässt spielfeld bei enterAttack : fixed, i guess
+* speichercrash am anfang manchmal, keine ahnugn wieso

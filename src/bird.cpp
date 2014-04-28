@@ -41,13 +41,14 @@ void Bird::action ()
 		framesRemain --;
 		
 		// state transition
-
-		if (possiblyAttack () == false && framesRemain == 0) {
-			if (rand ()%2 == 0) {
-				enterIdling ();
-			}
-			else {
-				enterHopping ();
+		if (!possiblyAttack ()) {
+			if (framesRemain == 0) {
+				if (rand ()%2 == 0) {
+					enterIdling ();
+				}
+				else {
+					enterHopping ();
+				}
 			}
 		}
 		
@@ -56,8 +57,10 @@ void Bird::action ()
 	// hopping around state
 	
 	case 1:
-		if (y >= BOTTOM)
+		if (y >= BOTTOM) {
 			vy = -6;
+			parent->sndBss->play ();
+		}
 		else
 			vy ++;
 		if (rand()%100 <= 10)
@@ -75,13 +78,14 @@ void Bird::action ()
 		framesRemain --;
 		
 		// state transition
-
-		if (possiblyAttack () == false && framesRemain == 0) {
-			if (rand ()%2 == 0) {
-				enterIdling ();
-			}
-			else {
-				enterHopping ();
+		if (!possiblyAttack ()) {
+			if (framesRemain == 0) {
+				if (rand ()%2 == 0) {
+					enterIdling ();
+				}
+				else {
+					enterHopping ();
+				}
 			}
 		}
 		
@@ -90,8 +94,10 @@ void Bird::action ()
 	// attack mode
 	
 	case 2:
-		if (y >= BOTTOM)
+		if (y >= BOTTOM) {
 			vy = -6;
+			parent->sndBss->play ();
+		}
 		else
 			vy ++;
 		if (rand()%100 <= 10)
@@ -100,8 +106,7 @@ void Bird::action ()
 		// state transition
 		
 		if ( x >= destX-5 && x <= destX+5) {
-			if (parent->getObst (destFieldX, 0)) {
-				parent->worm->die ();
+			if (parent->getObst (destFieldX, 0)==1) {
 				enterSnap ();
 			}
 			else {
@@ -170,12 +175,14 @@ bool Bird::possiblyAttack ()
 	int startFieldX;
 	
 	// shall I attack, is there a yummy worm for me?
+	if (parent->worm->dead)
+		return false;
 	
 	destFieldX = -1;
 	if (dir) { // left looking
 		startFieldX = (x-GRID_OFFX-90) / 32;
 		for (int i=startFieldX; i>=0; i--) {
-			if (parent->getObst (i, 0)) {
+			if (parent->getObst (i, 0)==1) {
 				destFieldX = i;
 				destX = destFieldX*32 + 16 + GRID_OFFX + 90;
 				vx = -6;
@@ -186,7 +193,7 @@ bool Bird::possiblyAttack ()
 	else { // right looking
 		startFieldX = (x-GRID_OFFX+90) / 32;
 		for (int i=startFieldX; i<GRID_COLS; i++) {
-			if (parent->getObst (i, 0)) {
+			if (parent->getObst (i, 0)==1) {
 				destFieldX = i;
 				destX = destFieldX*32 + 16 + GRID_OFFX - 90;
 				vx = +6;
@@ -198,11 +205,16 @@ bool Bird::possiblyAttack ()
 		state = 2;		
 		cout << "bird: enter attacking destField " << destFieldX << " destX " << destX;
 		cout << " startFieldX " << startFieldX << " vx " << vx << endl;
-
+		
 		if (startFieldX == destFieldX) {
-			enterSnap ();
+			if (parent->getObst (destFieldX, 0)==1) {
+				enterSnap ();
+			}
 		}
+		return true;
 	}
+	else
+		return false;
 }
 
 void Bird::enterSnap ()
@@ -210,8 +222,20 @@ void Bird::enterSnap ()
 	state = 3;
 	vx = 0;
 	framesRemain = FPS;
+	parent->sndRaffraff->play ();
 	img = imgs[2];
 	cout << "bird: snap " << endl;
-	parent->sndOmnomnom->play ();
+	Worm::Segment *wormsHead = *parent->worm->getSegment (0);
+	Worm::Segment *wormsSecond = *parent->worm->getSegment (1);
+	cout << "  " << wormsHead->x << " " << destFieldX << endl;
+	if ((wormsHead->y == 0 && wormsHead->x == destFieldX) ||
+		(wormsSecond->y == 0 && wormsSecond->x == destFieldX) )
+	{
+		parent->worm->die ();
+		parent->deathReason = 1;
+	}
+	else {
+		parent->worm->cutAt (destFieldX);
+	}
 }
 

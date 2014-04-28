@@ -1,6 +1,8 @@
 
 #include <iostream>
+#include <algorithm>
 #include <cmath>
+#include <algorithm>
 #include "earthworms.h"
 #include "sound.h"
 #include "worm.h"
@@ -43,6 +45,8 @@ Worm::Worm (Image *imgs[2], Earthworms *parent)
 	turbo = false;
 	
 	segments.clear ();
+	cutSegs.clear ();
+	
 	int x = GRID_COLS / 2;
 	int y = GRID_ROWS / 2;
 	segments.push_front (new Segment (x-0,y, 13, 8, dir));
@@ -51,6 +55,8 @@ Worm::Worm (Image *imgs[2], Earthworms *parent)
 	parent->setObst (x-0,y,true);
 	parent->setObst (x-1,y,true);
 	parent->setObst (x-2,y,true);
+	
+	commands.clear ();
 }
 
 Worm::~Worm ()
@@ -85,6 +91,17 @@ void Worm::action ()
 
 void Worm::advance ()
 {
+	// set scoreInc
+	parent->scoreInc = max(1, (int)(segments.size ()-3));
+	
+	// execute one turn command
+	if (!commands.empty()) {
+		int cmd = *commands.begin ();
+		turn (cmd);
+		commands.pop_front ();
+	}
+	
+	// do the turn
 	dir = nextDir;
 
 	// get current head seg
@@ -105,10 +122,22 @@ void Worm::advance ()
 	}
 	
 	// crash?
-	if (parent->getObst (newX, newY)) {
+	if (parent->getObst (newX, newY)==1) {
 		die ();
+		parent->deathReason = 3;
 		return;
 	}
+	else if (parent->getObst (newX, newY)==2) {
+		die ();
+		parent->deathReason = 2;
+		return;
+	}
+	else if (parent->getObst (newX, newY)==3) {
+		die ();
+		parent->deathReason = 0;
+		return;
+	}
+
 	
 	// update old head pattern
 	(*head)->p |= dir;
@@ -158,12 +187,16 @@ void Worm::advance ()
 	}
 	
 	// did worm eat something
-	if (parent->cherry && newY==0 && floor ((parent->cherry->x-GRID_OFFX)/32)==newX) {
+	if (parent->cherry && newY==0 && floor ((parent->cherry->x-GRID_OFFX)/32)==newX &&
+		parent->cherry->vy == 0 )
+	{
 		eat ();
 		delete parent->cherry;
 		parent->cherry = 0;
 	}
-	if (parent->leaf && newY==0 && floor ((parent->leaf->x-GRID_OFFX)/32)==newX) {
+	if (parent->leaf && newY==0 && floor ((parent->leaf->x-GRID_OFFX)/32)==newX &&
+		parent->leaf->vy == 0 )
+	{
 		eat ();
 		delete parent->leaf;
 		parent->leaf = 0;
@@ -202,12 +235,51 @@ void Worm::eat ()
 	haveEaten = true;
 	speed += 0.25;
 	parent->sndNyamNyam->play ();
+	parent->score += parent->scoreInc;
 }
 
 void Worm::die ()
 {
-	dead = true;
-	cout << "died" << endl;
-	parent->sndOuch [rand()%3]->play ();
+	if (!dead) {
+		dead = true;
+		cout << "died" << endl;
+		parent->sndOuch [rand()%3]->play ();
+	}
+}
+
+void Worm::sendCommand (int dir)
+{
+	//cout << "send " << dir << endl;
+	if (find (commands.begin(), commands.end(), dir) == commands.end()) {
+		//cout << "push " << dir << endl;
+		commands.push_back (dir);
+	}
+}
+
+void Worm::cutAt (int x)
+{
+	cout << "cut " << x << endl;
+	
+	list<Segment*>::iterator it = segments.begin ();
+	while ( !((*it)->y == 0 && (*it)->x == x) )  ++ it;
+	
+	--it;
+	(*it)->p = (*it)->d;
+	switch ((*it)->p) {
+	case 1: (*it)->f = 14; break;
+	case 2: (*it)->f = 12; break;
+	case 4: (*it)->f = 15; break;
+	case 8: (*it)->f = 13; break;
+	}
+	++it;
+	
+	while (it != segments.end ()) {
+		Segment *curSeg = *it;
+		parent->setObst (curSeg->x, curSeg->y, 0);
+		segments.erase (it++);
+		parent->score --;
+		if (parent->score < 0)
+			parent->score = 0;
+	}
 }
 
