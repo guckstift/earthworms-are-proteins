@@ -214,6 +214,7 @@ void Earthworms::playState ()
 		// time for another frame?
 		int curtick = SDL_GetTicks ();
 		if (curtick-lasttick >= FRAMELEN) {
+			cout << 1000.0/(curtick-lasttick) << endl;
 			lasttick = curtick;
 			
 			//
